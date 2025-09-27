@@ -1,12 +1,14 @@
 from app.strategies.base_strategy import BaseStrategy
 from app.schema import TurtleSignal, Ticker, Account
+from app.constants import MAX_POSITION_PERCENT
+from app.enums import SignalType
 
 
 class PyramidStrategy(BaseStrategy):
     """추격매수(피라미딩) 전략"""
 
-    def __init__(self, max_position_percent: float = 10.0, pyramid_profit_percent: float = 5.0):
-        self.max_position_percent = max_position_percent
+    def __init__(self, pyramid_profit_percent: float = 5.0):
+        self.max_position_percent = MAX_POSITION_PERCENT
         self.pyramid_profit_percent = pyramid_profit_percent
 
     def analyze(self, market: str, ticker: Ticker, market_analysis: dict, accounts: list[Account]) -> TurtleSignal:
@@ -63,7 +65,7 @@ class PyramidStrategy(BaseStrategy):
         """홀드 신호 생성"""
         return TurtleSignal(
             market=market,
-            signal_type="HOLD",
+            signal_type=SignalType.HOLD,
             reason=reason,
             current_price=current_price
         )

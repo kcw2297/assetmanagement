@@ -12,12 +12,27 @@ class MajorCoin(StrEnum):
     TRX = "TRX"    # 트론
     BCH = "BCH"    # 비트코인 캐시
 
+    @property
+    def market(self) -> str:
+        return f"KRW-{self.value}"
+
     @classmethod
     def get_coins(cls) -> list[str]:
         return [
             cls.BTC, cls.ETH, cls.XRP, cls.DOGE, cls.LINK,
             cls.WLD, cls.BNB, cls.TRX, cls.BCH
         ]
+
+    @classmethod
+    def get_markets(cls) -> list[str]:
+        return [coin.market for coin in cls]
+
+
+class SignalType(StrEnum):
+    BUY = "BUY"          # 매수
+    SELL = "SELL"        # 매도
+    PYRAMID = "PYRAMID"  # 피라미딩
+    HOLD = "HOLD"        # 홀드
 
 
 class AccountCurrency(StrEnum):

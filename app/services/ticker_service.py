@@ -9,19 +9,16 @@ class TickerService:
     def __init__(self, client: BithumbClient):
         self.client = client
 
-    def get_ticker(self, market: str) -> Ticker | None:
-        """특정 마켓의 티커 정보 조회"""
+    def get_ticker(self, market: str) -> Ticker:
         try:
             result = self.client.call_public_api("/v1/ticker", {"markets": market})
 
             if result['status_code'] != 200:
-                print(f"❌ Ticker API 에러: {result['status_code']}")
-                return None
+                raise ValueError(f"❌ Ticker API 에러: {result['status_code']}")
 
             data = result['data']
             if not data or not isinstance(data, list) or len(data) == 0:
-                print(f"❌ {market} 티커 데이터가 없습니다.")
-                return None
+                raise ValueError(f"❌ Ticker API 에러: {result['status_code']}")
 
             ticker_data = data[0]  # 첫 번째 데이터 사용
 

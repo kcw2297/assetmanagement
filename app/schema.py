@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from app.enums import SignalType
 
 
 class Account(BaseModel):
@@ -39,10 +40,9 @@ class MovingAverage(BaseModel):
 
 
 class TurtleSignal(BaseModel):
-    """터틀 트레이딩 신호"""
     market: str
-    signal_type: str  # BUY, SELL, PYRAMID, HOLD
-    reason: str       # 신호 발생 이유
+    signal_type: SignalType  # BUY, SELL, PYRAMID, HOLD
+    reason: str              # 신호 발생 이유
     current_price: float
     target_amount: float = 0.0  # 거래 금액
     confidence: float = 0.0     # 신호 신뢰도 (0-1)

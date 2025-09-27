@@ -1,5 +1,6 @@
 from app.strategies.base_strategy import BaseStrategy
 from app.schema import TurtleSignal, Ticker, Account
+from app.enums import SignalType
 
 
 class SellStrategy(BaseStrategy):
@@ -49,7 +50,7 @@ class SellStrategy(BaseStrategy):
         """매도 신호 생성"""
         return TurtleSignal(
             market=market,
-            signal_type="SELL",
+            signal_type=SignalType.SELL,
             reason=reason,
             current_price=current_price,
             target_amount=amount,
@@ -60,7 +61,7 @@ class SellStrategy(BaseStrategy):
         """홀드 신호 생성"""
         return TurtleSignal(
             market=market,
-            signal_type="HOLD",
+            signal_type=SignalType.HOLD,
             reason=reason,
             current_price=current_price
         )
