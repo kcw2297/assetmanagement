@@ -1,39 +1,69 @@
 from app.config.bithumb_client import BithumbClient
 from app.services.account_service import AccountService
 from app.services.ticker_service import TickerService
+from app.services.candle_service import CandleService
+from app.strategies.turtle_coordinator import TurtleCoordinator
 from app.enums import MajorCoin
 from app.schema import Account
 
 def main():
+    print("🐢 터틀 트레이딩 자동화 시스템")
+    print("=" * 50)
+
+    # 서비스 초기화
     client = BithumbClient()
     account_service = AccountService(client)
     ticker_service = TickerService(client)
+    candle_service = CandleService(client)
 
+    # 터틀 코디네이터 초기화
+    coordinator = TurtleCoordinator(
+        ticker_service=ticker_service,
+        candle_service=candle_service,
+        account_service=account_service
+    )
+
+    # 보유 자산 정보 출력
     accounts: list[Account] = account_service.get_accounts()
-    print("=== 보유 자산 정보 ===")
+    print("\n📊 보유 자산 정보")
+    print("-" * 30)
+    total_krw = 0
     for account in accounts:
-        print(f"{account.currency}: {account.balance:,.2f}")
+        if account.currency == "KRW":
+            total_krw = account.balance
+            print(f"💰 {account.currency}: {account.balance:,.0f}원")
+        elif account.balance > 0:
+            print(f"🪙 {account.currency}: {account.balance:.6f}")
 
-    major_coins = MajorCoin.get_coins()
+    print(f"\n총 원화 잔고: {total_krw:,.0f}원")
 
-    for coin in major_coins:
-        TICKER = f"KRW-{coin}"
-        ticker = ticker_service.get_ticker(TICKER)
+    # 주요 코인별 전략 분석
+    print("\n🎯 주요 코인별 투자 전략")
+    print("=" * 50)
 
-        if ticker:
-            print(f"\n{coin} ({ticker.market}):")
-            print(f"  현재가: {ticker.trade_price:,.0f}원")
-            print(f"  시가: {ticker.opening_price:,.0f}원")
-            print(f"  고가: {ticker.high_price:,.0f}원")
-            print(f"  저가: {ticker.low_price:,.0f}원")
-            print(f"  전일종가: {ticker.prev_closing_price:,.0f}원")
-            print(f"  변화: {ticker.change} ({ticker.change_rate:.2%})")
-            print(f"  24시간 거래량: {ticker.acc_trade_volume_24h:,.2f}")
-        else:
-            print(f"\n{coin}: 데이터 조회 실패")
+    for coin in MajorCoin:
+        market = coin.market
+        print(f"\n[{coin.value}] 분석:")
+        print("-" * 20)
 
+        try:
+            signal = coordinator.analyze_comprehensive_signal(market)
 
+            print(f"📈 현재가: {signal.current_price:,.0f}원")
+            print(f"🚦 신호: {signal.signal_type.value}")
+            print(f"📝 이유: {signal.reason}")
 
+            if signal.target_amount > 0:
+                print(f"💳 거래금액: {signal.target_amount:,.0f}원")
+
+            if signal.confidence > 0:
+                print(f"📊 신뢰도: {signal.confidence:.1%}")
+
+        except Exception as e:
+            print(f"❌ 분석 실패: {str(e)}")
+
+    print("\n" + "=" * 50)
+    print("분석 완료! 📈")
 
 if __name__ == "__main__":
     main()
