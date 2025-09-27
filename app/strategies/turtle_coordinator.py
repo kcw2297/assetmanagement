@@ -34,7 +34,6 @@ class TurtleCoordinator:
                 current_price=0.0
             )
 
-        # 보유 여부 확인
         currency = market.split('-')[1]
         holding_account = None
         for acc in accounts:
@@ -42,17 +41,13 @@ class TurtleCoordinator:
                 holding_account = acc
                 break
 
-        # 전략 선택 및 실행
         if holding_account and holding_account.balance > 0:
-            # 보유 중이면 매도 신호 우선 확인
             sell_signal = self.sell_strategy.analyze(market, ticker, market_analysis, accounts)
             if sell_signal.signal_type == SignalType.SELL:
                 return sell_signal
 
-            # 매도 신호가 없으면 피라미딩 확인
             return self.pyramid_strategy.analyze(market, ticker, market_analysis, accounts)
         else:
-            # 미보유 시 매수 신호 확인
             return self.buy_strategy.analyze(market, ticker, market_analysis, accounts)
 
     def analyze_buy_signal(self, market: str) -> TurtleSignal:
