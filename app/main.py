@@ -5,6 +5,7 @@ from app.services.candle_service import CandleService
 from app.services.order_service import OrderService
 from app.strategies.turtle_coordinator import TurtleCoordinator
 from app.enums import MajorCoin, SignalType
+from app.schema import TurtleSignal
 
 def main():
     # 서비스 초기화
@@ -17,7 +18,8 @@ def main():
     coordinator = TurtleCoordinator(
         ticker_service=ticker_service,
         candle_service=candle_service,
-        account_service=account_service
+        account_service=account_service,
+        client=client
     )
 
     # 보유 자산 출력
@@ -31,16 +33,16 @@ def main():
 
     for coin in MajorCoin:
         try:
-            signal = coordinator.analyze_comprehensive_signal(coin.market)
+            signal: TurtleSignal = coordinator.analyze_comprehensive_signal(coin.market)
             print(f"[{coin.value}] {signal.signal_type.value} - {signal.current_price:,.0f}원")
 
             if signal.signal_type == SignalType.HOLD:
                 continue
 
-            order_result = order_service.execute_signal_order(signal)
-            if "status_code" in order_result and order_result["status_code"] == 201:
-                print(f"✅ {coin.value} 주문 성공")
-                executed_orders.append(coin.value)
+            # order_result = order_service.execute_signal_order(signal)
+            # if "status_code" in order_result and order_result["status_code"] == 201:
+            #     print(f"✅ {coin.value} 주문 성공")
+            #     executed_orders.append(coin.value)
         except:
             continue
 

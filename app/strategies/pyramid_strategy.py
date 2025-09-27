@@ -1,15 +1,17 @@
 from app.strategies.base_strategy import BaseStrategy
 from app.schema import TurtleSignal, Ticker, Account
-from app.constants import MAX_POSITION_PERCENT
+from app.constants import MAX_POSITION_PERCENT, POSITION_SIZE_PERCENT
 from app.enums import SignalType
+from app.services.order_history_service import OrderHistoryService
 
 
 class PyramidStrategy(BaseStrategy):
     """추격매수(피라미딩) 전략"""
 
-    def __init__(self, pyramid_profit_percent: float = 5.0):
+    def __init__(self, client, pyramid_profit_percent: float = 5.0):
         self.max_position_percent = MAX_POSITION_PERCENT
         self.pyramid_profit_percent = pyramid_profit_percent
+        self.order_history_service = OrderHistoryService(client)
 
     def analyze(self, market: str, ticker: Ticker, market_analysis: dict, accounts: list[Account]) -> TurtleSignal:
         """추격매수 신호 분석"""
@@ -37,10 +39,24 @@ class PyramidStrategy(BaseStrategy):
                 market, f"최대 포지션 한도({self.max_position_percent}%) 도달", ticker.trade_price
             )
 
-        # TODO: 수익 5% 증가마다 추가 매수 로직
-        # 현재는 평균매수가 정보가 없어서 구현 보류
+        # 4. 단계별 피라미딩 조건 확인
+        should_buy, reason = self.order_history_service.should_pyramid(market, ticker.trade_price)
 
-        return self._create_hold_signal(market, "피라미딩 조건 미충족", ticker.trade_price)
+        if should_buy:
+            # 추가 매수 금액 계산 (전체 자금의 2%)
+            krw_balance = self._get_krw_balance(accounts)
+            target_amount = krw_balance * (POSITION_SIZE_PERCENT / 100)
+
+            return TurtleSignal(
+                market=market,
+                signal_type=SignalType.PYRAMID,
+                reason=reason,
+                current_price=ticker.trade_price,
+                target_amount=target_amount,
+                confidence=0.8
+            )
+
+        return self._create_hold_signal(market, reason, ticker.trade_price)
 
     def _is_ma_break(self, market_analysis: dict) -> bool:
         """5일/10일선 이탈 여부"""

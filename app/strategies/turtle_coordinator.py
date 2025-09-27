@@ -12,14 +12,15 @@ class TurtleCoordinator:
         self,
         ticker_service: TickerService,
         candle_service: CandleService,
-        account_service: AccountService
+        account_service: AccountService,
+        client
     ):
         self.ticker_service = ticker_service
         self.candle_service = candle_service
         self.account_service = account_service
         self.buy_strategy = BuyStrategy()
         self.sell_strategy = SellStrategy()
-        self.pyramid_strategy = PyramidStrategy()
+        self.pyramid_strategy = PyramidStrategy(client)
 
     def analyze_comprehensive_signal(self, market: str) -> TurtleSignal:
         ticker = self.ticker_service.get_ticker(market)

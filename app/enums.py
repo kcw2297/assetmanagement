@@ -8,10 +8,6 @@ class MajorCoin(StrEnum):
     DOGE = "DOGE"  # 도지코인 (ETF 예정)
     SOL = "SOL"    # 솔라나 (ETF 예정)
     BNB = "BNB"    # 바이낸스 코인 (세계 1위 거래소)
-    ADA = "ADA"    # 카르다노 (스테이킹 가능)
-    AVAX = "AVAX"  # 아발란체 (DeFi 생태계)
-    LINK = "LINK"  # 체인링크 (오라클 선두)
-    MATIC = "MATIC" # 폴리곤 (이더리움 L2)
 
     @property
     def market(self) -> str:
@@ -21,7 +17,7 @@ class MajorCoin(StrEnum):
     def get_coins(cls) -> list[str]:
         return [
             cls.BTC, cls.ETH, cls.XRP, cls.DOGE, cls.SOL,
-            cls.BNB, cls.ADA, cls.AVAX, cls.LINK, cls.MATIC
+            cls.BNB
         ]
 
     @classmethod
@@ -55,10 +51,6 @@ class AccountCurrency(StrEnum):
     DOGE = "DOGE"  # 도지코인
     SOL = "SOL"    # 솔라나
     BNB = "BNB"    # 바이낸스 코인
-    ADA = "ADA"    # 카르다노
-    AVAX = "AVAX"  # 아발란체
-    LINK = "LINK"  # 체인링크
-    MATIC = "MATIC" # 폴리곤
 
     @classmethod
     def is_valid_currency(cls, currency: str) -> bool:
