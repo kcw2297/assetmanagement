@@ -9,7 +9,7 @@ class AccountService:
 
     def get_accounts(self) -> list[Account]:
         try:
-            result = self.client.call_api("/v1/accounts")
+            result = self.client.call_private_api("/v1/accounts")
             data = result['data']
 
             if 'error' in data:

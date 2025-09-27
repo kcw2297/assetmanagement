@@ -13,7 +13,7 @@ class MajorCoin(StrEnum):
     BCH = "BCH"    # 비트코인 캐시
 
     @classmethod
-    def get_top_coins(cls) -> list[str]:
+    def get_coins(cls) -> list[str]:
         return [
             cls.BTC, cls.ETH, cls.XRP, cls.DOGE, cls.LINK,
             cls.WLD, cls.BNB, cls.TRX, cls.BCH

@@ -26,7 +26,8 @@ class BithumbClient:
         jwt_token = self._generate_jwt_token()
         return {'Authorization': f'Bearer {jwt_token}'}
 
-    def call_api(self, endpoint: str) -> dict:
+    def call_private_api(self, endpoint: str) -> dict:
+        """Private API 호출 (JWT 인증 필요)"""
         headers = self._get_headers()
 
         try:
@@ -38,5 +39,20 @@ class BithumbClient:
         except Exception as e:
             return {
                 'status_code': 0,
+                'data': {"error": str(e)}
+            }
+
+    def call_public_api(self, endpoint: str, params: dict) -> dict:
+        headers = {"accept": "application/json"}
+
+        try:
+            response = requests.get(f"{self.BASE_URL}{endpoint}", headers=headers, params=params)
+            return {
+                'status_code': response.status_code,
+                'data': response.json()
+            }
+        except Exception as e:
+            return {
+                'status_code': 400,
                 'data': {"error": str(e)}
             }
