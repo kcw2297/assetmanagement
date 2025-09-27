@@ -1,22 +1,19 @@
 import jwt
 import uuid
 import time
+import requests
 
-from pybithumb import Bithumb
 from app.config.settings import settings
 
 
 class BithumbClient:
-    """빗썸 API 클라이언트 - 연결 담당"""
-
-    BASE_URL = 'https://api.bithumb.com'
+    BASE_URL = "https://api.bithumb.com"
 
     def __init__(self):
         self.api_key = settings.BITHUMB_API_KEY
         self.secret_key = settings.BITHUMB_SECRET_KEY
-        self.public_client = Bithumb(self.api_key, self.secret_key)
 
-    def generate_jwt_token(self) -> str:
+    def _generate_jwt_token(self) -> str:
         """JWT 토큰 생성"""
         payload = {
             'access_key': self.api_key,
@@ -25,6 +22,21 @@ class BithumbClient:
         }
         return jwt.encode(payload, self.secret_key, algorithm='HS256')
 
-    def get_headers(self) -> dict[str, str]:
-        """인증 헤더 생성"""
-        return {'Authorization': f'Bearer {self.generate_jwt_token()}'}
+    def _get_headers(self) -> dict[str, str]:
+        jwt_token = self._generate_jwt_token()
+        return {'Authorization': f'Bearer {jwt_token}'}
+
+    def call_api(self, endpoint: str) -> dict:
+        headers = self._get_headers()
+
+        try:
+            response = requests.get(f"{self.BASE_URL}{endpoint}", headers=headers)
+            return {
+                'status_code': response.status_code,
+                'data': response.json()
+            }
+        except Exception as e:
+            return {
+                'status_code': 0,
+                'data': {"error": str(e)}
+            }
