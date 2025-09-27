@@ -2,15 +2,16 @@ from enum import StrEnum
 
 
 class MajorCoin(StrEnum):
-    BTC = "BTC"    # 비트코인
-    ETH = "ETH"    # 이더리움
-    XRP = "XRP"    # 리플
-    DOGE = "DOGE"  # 도지코인
-    LINK = "LINK"  # 체인링크
-    WLD = "WLD"    # 월드코인
-    BNB = "BNB"    # 바이낸스 코인
-    TRX = "TRX"    # 트론
-    BCH = "BCH"    # 비트코인 캐시
+    BTC = "BTC"    # 비트코인 (ETF 승인)
+    ETH = "ETH"    # 이더리움 (ETF 승인)
+    XRP = "XRP"    # 리플 (ETF 예정)
+    DOGE = "DOGE"  # 도지코인 (ETF 예정)
+    SOL = "SOL"    # 솔라나 (ETF 예정)
+    BNB = "BNB"    # 바이낸스 코인 (세계 1위 거래소)
+    ADA = "ADA"    # 카르다노 (스테이킹 가능)
+    AVAX = "AVAX"  # 아발란체 (DeFi 생태계)
+    LINK = "LINK"  # 체인링크 (오라클 선두)
+    MATIC = "MATIC" # 폴리곤 (이더리움 L2)
 
     @property
     def market(self) -> str:
@@ -19,8 +20,8 @@ class MajorCoin(StrEnum):
     @classmethod
     def get_coins(cls) -> list[str]:
         return [
-            cls.BTC, cls.ETH, cls.XRP, cls.DOGE, cls.LINK,
-            cls.WLD, cls.BNB, cls.TRX, cls.BCH
+            cls.BTC, cls.ETH, cls.XRP, cls.DOGE, cls.SOL,
+            cls.BNB, cls.ADA, cls.AVAX, cls.LINK, cls.MATIC
         ]
 
     @classmethod
@@ -52,11 +53,12 @@ class AccountCurrency(StrEnum):
     ETH = "ETH"    # 이더리움
     XRP = "XRP"    # 리플
     DOGE = "DOGE"  # 도지코인
-    LINK = "LINK"  # 체인링크
-    WLD = "WLD"    # 월드코인
+    SOL = "SOL"    # 솔라나
     BNB = "BNB"    # 바이낸스 코인
-    TRX = "TRX"    # 트론
-    BCH = "BCH"    # 비트코인 캐시
+    ADA = "ADA"    # 카르다노
+    AVAX = "AVAX"  # 아발란체
+    LINK = "LINK"  # 체인링크
+    MATIC = "MATIC" # 폴리곤
 
     @classmethod
     def is_valid_currency(cls, currency: str) -> bool:

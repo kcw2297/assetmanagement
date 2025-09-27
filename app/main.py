@@ -2,68 +2,49 @@ from app.config.bithumb_client import BithumbClient
 from app.services.account_service import AccountService
 from app.services.ticker_service import TickerService
 from app.services.candle_service import CandleService
+from app.services.order_service import OrderService
 from app.strategies.turtle_coordinator import TurtleCoordinator
-from app.enums import MajorCoin
-from app.schema import Account
+from app.enums import MajorCoin, SignalType
 
 def main():
-    print("🐢 터틀 트레이딩 자동화 시스템")
-    print("=" * 50)
-
     # 서비스 초기화
     client = BithumbClient()
     account_service = AccountService(client)
     ticker_service = TickerService(client)
     candle_service = CandleService(client)
+    order_service = OrderService(client)
 
-    # 터틀 코디네이터 초기화
     coordinator = TurtleCoordinator(
         ticker_service=ticker_service,
         candle_service=candle_service,
         account_service=account_service
     )
 
-    # 보유 자산 정보 출력
-    accounts: list[Account] = account_service.get_accounts()
-    print("\n📊 보유 자산 정보")
-    print("-" * 30)
-    total_krw = 0
-    for account in accounts:
-        if account.currency == "KRW":
-            total_krw = account.balance
-            print(f"💰 {account.currency}: {account.balance:,.0f}원")
-        elif account.balance > 0:
-            print(f"🪙 {account.currency}: {account.balance:.6f}")
+    # 보유 자산 출력
+    accounts = account_service.get_accounts()
+    krw_balance = next((acc.balance for acc in accounts if acc.currency == "KRW"), 0)
+    print(f"💰 원화 잔고: {krw_balance:,.0f}원")
 
-    print(f"\n총 원화 잔고: {total_krw:,.0f}원")
+    print("🎯 터틀 분석 시작")
 
-    # 주요 코인별 전략 분석
-    print("\n🎯 주요 코인별 투자 전략")
-    print("=" * 50)
+    executed_orders = []
 
     for coin in MajorCoin:
-        market = coin.market
-        print(f"\n[{coin.value}] 분석:")
-        print("-" * 20)
-
         try:
-            signal = coordinator.analyze_comprehensive_signal(market)
+            signal = coordinator.analyze_comprehensive_signal(coin.market)
+            print(f"[{coin.value}] {signal.signal_type.value} - {signal.current_price:,.0f}원")
 
-            print(f"📈 현재가: {signal.current_price:,.0f}원")
-            print(f"🚦 신호: {signal.signal_type.value}")
-            print(f"📝 이유: {signal.reason}")
+            if signal.signal_type == SignalType.HOLD:
+                continue
 
-            if signal.target_amount > 0:
-                print(f"💳 거래금액: {signal.target_amount:,.0f}원")
+            order_result = order_service.execute_signal_order(signal)
+            if "status_code" in order_result and order_result["status_code"] == 201:
+                print(f"✅ {coin.value} 주문 성공")
+                executed_orders.append(coin.value)
+        except:
+            continue
 
-            if signal.confidence > 0:
-                print(f"📊 신뢰도: {signal.confidence:.1%}")
-
-        except Exception as e:
-            print(f"❌ 분석 실패: {str(e)}")
-
-    print("\n" + "=" * 50)
-    print("분석 완료! 📈")
+    print(f"\n📈 실행 완료: {len(executed_orders)}개 주문" if executed_orders else "\n📋 실행된 주문 없음")
 
 if __name__ == "__main__":
     main()
