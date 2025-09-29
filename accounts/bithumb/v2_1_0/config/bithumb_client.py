@@ -58,8 +58,7 @@ class BithumbClient:
                 'data': {"error": str(e)}
             }
 
-    def call_order_api(self, request_body: dict) -> dict:
-        """주문 API 호출 (JWT + query_hash 인증)"""
+    def call_order_api(self, endpoint: str, request_body: dict, method: str = "POST") -> dict:
         try:
             query = urlencode(request_body).encode()
             hash_obj = hashlib.sha512()
@@ -82,11 +81,16 @@ class BithumbClient:
                 'Content-Type': 'application/json'
             }
 
-            response = requests.post(
-                f"{self.BASE_URL}/v1/orders",
-                data=json.dumps(request_body),
-                headers=headers
-            )
+            url = f"{self.BASE_URL}{endpoint}"
+
+            if method.upper() == "POST":
+                response = requests.post(url, data=json.dumps(request_body), headers=headers)
+            elif method.upper() == "DELETE":
+                response = requests.delete(url, data=json.dumps(request_body), headers=headers)
+            elif method.upper() == "GET":
+                response = requests.get(url, headers=headers, params=request_body)
+            else:
+                raise ValueError(f"Unsupported HTTP method: {method}")
 
             return {
                 "status_code": response.status_code,
