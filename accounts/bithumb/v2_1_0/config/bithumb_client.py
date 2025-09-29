@@ -6,7 +6,7 @@ import hashlib
 from urllib.parse import urlencode
 import requests
 
-from accounts.bithumb.config.settings import settings
+from accounts.bithumb.v2_1_0.config.settings import settings
 
 
 class BithumbClient:
