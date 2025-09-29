@@ -1,8 +1,9 @@
 from assetmanagement.strategies.turtle.services.base_services import BaseStrategy
-from assetmanagement.strategies.turtle.schema import TurtleSignal, Ticker, Account
+from assetmanagement.strategies.turtle.schema import TurtleSignal
 from assetmanagement.strategies.turtle.constants import POSITION_SIZE_PERCENT
 from assetmanagement.strategies.turtle.enums import SignalType
 
+from accounts.bithumb.v2_1_0.schema import Ticker, Account
 
 class BuyStrategy(BaseStrategy):
     def __init__(self):

@@ -1,9 +1,11 @@
 from assetmanagement.strategies.turtle.services.base_services import BaseStrategy
-from assetmanagement.strategies.turtle.schema import TurtleSignal, Ticker, Account
+from assetmanagement.strategies.turtle.schema import TurtleSignal
 from assetmanagement.strategies.turtle.constants import MAX_POSITION_PERCENT, POSITION_SIZE_PERCENT
 from assetmanagement.strategies.turtle.enums import SignalType
-from assetmanagement.accounts.bithumb.services.order_history_service import OrderHistoryService
+from assetmanagement.accounts.bithumb.v2_1_0.services.order_history_service import OrderHistoryService
 
+
+from accounts.bithumb.v2_1_0.schema import Ticker, Account
 
 class PyramidStrategy(BaseStrategy):
     """추격매수(피라미딩) 전략"""

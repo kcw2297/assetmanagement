@@ -1,11 +1,14 @@
 from assetmanagement.strategies.turtle.services.buy_service import BuyStrategy
 from assetmanagement.strategies.turtle.services.sell_service import SellStrategy
 from assetmanagement.strategies.turtle.services.pyramid_service import PyramidStrategy
-from assetmanagement.accounts.bithumb.services.ticker_service import TickerService
-from assetmanagement.accounts.bithumb.services.candle_service import CandleService
-from assetmanagement.accounts.bithumb.services.account_service import AccountService
-from assetmanagement.strategies.turtle.schema import TurtleSignal, Ticker
+from assetmanagement.accounts.bithumb.v2_1_0.services.ticker_service import TickerService
+from assetmanagement.accounts.bithumb.v2_1_0.services.candle_service import CandleService
+from assetmanagement.accounts.bithumb.v2_1_0.services.account_service import AccountService
+from assetmanagement.strategies.turtle.schema import TurtleSignal
 from assetmanagement.strategies.turtle.enums import SignalType
+from accounts.bithumb.v2_1_0.schema import Ticker
+
+
 
 class TurtleCoordinator:
     def __init__(

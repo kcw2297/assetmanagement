@@ -12,7 +12,6 @@ class TurtleSignal(BaseModel):
 
 
 class Position(BaseModel):
-    """특정 종목의 포지션 정보"""
     market: str
     currency: str
     total_volume: float  # 총 보유량

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from assetmanagement.strategies.turtle.schema import TurtleSignal, Ticker, Account
+from strategies.turtle.schema import TurtleSignal
 
+from accounts.bithumb.v2_1_0.schema import Ticker, Account
 
 class BaseStrategy(ABC):
     @abstractmethod
