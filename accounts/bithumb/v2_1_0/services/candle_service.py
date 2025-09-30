@@ -46,30 +46,5 @@ class CandleService:
         return candles
 
 
-    def get_market_analysis(self, market: str) -> dict:
-        candles = self.get_daily_candles(market, 20)
-
-        closing_prices = [candle.trade_price for candle in candles]
-        current_price = candles[-1].trade_price
-
-        ma5 = MovingAverageUtils.calculate_sma(closing_prices, 5) if len(closing_prices) >= 5 else 0.0
-        ma10 = MovingAverageUtils.calculate_sma(closing_prices, 10) if len(closing_prices) >= 10 else 0.0
-        ma20 = MovingAverageUtils.calculate_sma(closing_prices, 20) if len(closing_prices) >= 20 else 0.0
-
-        return {
-            'market': market,
-            'current_price': current_price,
-            'moving_averages': {
-                5: ma5,
-                10: ma10,
-                20: ma20
-            },
-            'is_above_ma5': current_price > ma5,
-            'is_above_ma10': current_price > ma10,
-            'is_above_ma20': current_price > ma20,
-            'recent_high_20d': max([c.high_price for c in candles]),
-            'candles_count': len(candles)
-        }
-        
         
         

@@ -7,26 +7,23 @@ class AccountService:
         self.client = client
 
     def get_accounts(self) -> list[Account]:
-        try:
-            result = self.client.call_private_api("/v1/accounts")
-            data = result['data']
+        result = self.client.call_private_api("/v1/accounts")
+        data = result['data']
 
-            if 'error' in data:
-                return []
+        if 'error' in data:
+            raise Exception('자산 정보를 가져오는데 실패 했습니다.')
 
-            results = []
-            for account_data in data:
-                account = Account(
-                    currency=account_data.get('currency', '').upper(),
-                    balance=float(account_data.get('balance', 0.0)),
-                    locked=float(account_data.get('locked', 0.0)),
-                    avg_buy_price=float(account_data.get('avg_buy_price', 0.0)),
-                    avg_buy_price_modified=account_data.get('avg_buy_price_modified', False),
-                    unit_currency=account_data.get('unit_currency', 'KRW'),
-                )
-                results.append(account)
+        results = []
+        for account_data in data:
+            account = Account(
+                currency=account_data.get('currency', '').upper(),
+                balance=float(account_data.get('balance', 0.0)),
+                locked=float(account_data.get('locked', 0.0)),
+                avg_buy_price=float(account_data.get('avg_buy_price', 0.0)),
+                avg_buy_price_modified=account_data.get('avg_buy_price_modified', False),
+                unit_currency=account_data.get('unit_currency', 'KRW'),
+            )
+            results.append(account)
 
-            return results
+        return results
 
-        except Exception:
-            return []

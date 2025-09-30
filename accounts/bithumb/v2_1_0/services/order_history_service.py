@@ -11,26 +11,23 @@ class OrderHistoryService:
         self.client = client
 
     def get_orders(self, market: str, state: str = "done") -> list[Order]:
-        try:
-            endpoint = "/v1/orders"
-            result = self.client.call_private_api(endpoint)
-            data = result.get('data', [])
+        endpoint = "/v1/orders"
+        result = self.client.call_private_api(endpoint)
+        data = result.get('data', [])
 
-            if 'error' in data:
-                return []
+        if 'error' in data:
+            raise Exception('주문 정보를 가져오는데 실패 했습니다.')
 
-            orders = []
-            for order_data in data:
-                if (order_data.get('market') == market and
-                    order_data.get('state') == state):
+        orders = []
+        for order_data in data:
+            if (order_data.get('market') == market and
+                order_data.get('state') == state):
 
-                    order = Order(**order_data)
-                    orders.append(order)
+                order = Order(**order_data)
+                orders.append(order)
 
-            return orders
+        return orders
 
-        except Exception:
-            return []
 
     def get_trades(self, market: str) -> list[Trade]:
         try:
