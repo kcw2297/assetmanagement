@@ -1,5 +1,4 @@
 from strategies.turtle.services.base_service import BaseStrategy
-from strategies.turtle.schema import TurtleSignal
 
 
 class SellStrategy(BaseStrategy):
@@ -7,6 +6,6 @@ class SellStrategy(BaseStrategy):
         super().__init__(unit)
         
 
-    def analyze(self) -> TurtleSignal:
+    def run(self) -> bool:
 
         return
