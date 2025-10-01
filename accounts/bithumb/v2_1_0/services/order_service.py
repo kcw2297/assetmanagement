@@ -1,6 +1,4 @@
 from accounts.bithumb.v2_1_0.config.bithumb_client import BithumbClient
-from strategies.turtle.schema import TurtleSignal
-from strategies.turtle.enums import SignalType
 from accounts.bithumb.v2_1_0.enums import OrderSide, OrderType
 from accounts.bithumb.v2_1_0.schema import Order
 
