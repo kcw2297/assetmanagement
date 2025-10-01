@@ -1,4 +1,4 @@
-POSITION_SIZE_PERCENT = 2  # 기본 포지션 크기 (%)
+POSITION_SIZE_PERCENT = 2.0  # 기본 포지션 크기(유닛) (%)
 MAX_POSITION_PERCENT = 10  # 종목당 최대 포지션 (%)
 
 # 피라미딩 수익률 단계 (%)

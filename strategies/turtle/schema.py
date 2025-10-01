@@ -1,15 +1,13 @@
-from pydantic import BaseModel
-from assetmanagement.strategies.turtle.enums import SignalType
+from pydantic import BaseModel, Field
+from strategies.turtle.enums import SignalType
 
 
 class TurtleSignal(BaseModel):
-    market: str
-    signal_type: SignalType  # BUY, SELL, PYRAMID, HOLD
-    reason: str              # 신호 발생 이유
-    current_price: float
-    target_amount: float = 0.0  # 거래 금액
-    confidence: float = 0.0     # 신호 신뢰도 (0-1)
-
+    signal_type: SignalType = Field(description="BUY, SELL, PYRAMID, HOLD")
+    reason: str = Field(description="신호 발생 이유")
+    current_price: float = Field(description="현재가")
+    target_amount: float = Field(default=0.0 , description="거래 금액")
+ 
 
 class Position(BaseModel):
     market: str
