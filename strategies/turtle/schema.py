@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, computed_field
+from strategies.turtle.enums import SignalAction, BuyType
 
 
 class TurtlePosition(BaseModel):
@@ -14,13 +15,24 @@ class TurtlePosition(BaseModel):
         return self.price * self.quantity
 
 
+class TradeSignal(BaseModel):
+    action: SignalAction
+    price: float = Field(default=0, gt=0)
+    quantity: int = Field(default=0, ge=0)
+    N: float = Field(default=0, ge=0)
+    trade_date: str = Field(default="")
+    reason: str = Field(default="")
+    type: BuyType | None = Field(default=None)
+    unit_number: int | None = Field(default=None, ge=1)
+
+
 class Position(BaseModel):
     market: str
     currency: str
-    total_volume: float  # 총 보유량
-    avg_buy_price: float  # 평균매수가
-    total_paid: float    # 총 투입금액
-    current_value: float # 현재 평가금액
-    profit_rate: float   # 수익률 (%)
-    profit_amount: float # 수익금액
-    last_updated: str    # 마지막 업데이트 시간
+    total_volume: float
+    avg_buy_price: float
+    total_paid: float
+    current_value: float
+    profit_rate: float
+    profit_amount: float
+    last_updated: str
