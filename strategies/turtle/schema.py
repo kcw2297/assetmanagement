@@ -1,13 +1,18 @@
-from pydantic import BaseModel, Field
-from strategies.turtle.enums import SignalType
+from pydantic import BaseModel, Field, computed_field
 
 
-class TurtleSignal(BaseModel):
-    signal_type: SignalType = Field(description="BUY, SELL, PYRAMID, HOLD")
-    reason: str = Field(description="신호 발생 이유")
-    current_price: float = Field(description="현재가")
-    target_amount: float = Field(default=0.0 , description="거래 금액")
- 
+class TurtlePosition(BaseModel):
+    price: float = Field(..., gt=0, description="매수 가격")
+    quantity: int = Field(..., gt=0, description="매수 수량")
+    N: float = Field(..., gt=0, description="매수 시점의 ATR(N) 값")
+    trade_date: str = Field(..., description="거래일시 (ISO 8601 형식)")
+    unit_number: int = Field(..., ge=1, description="유닛 번호 (1=초기매수, 2~4=추격매수)")
+
+    @computed_field
+    @property
+    def value(self) -> float:
+        return self.price * self.quantity
+
 
 class Position(BaseModel):
     market: str
