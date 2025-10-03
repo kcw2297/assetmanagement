@@ -1,17 +1,13 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class StrategyLevel(str, Enum):
-    L1 = "L1"
-    L2 = "L2"
 
-
-class SignalAction(str, Enum):
+class SignalAction(StrEnum):
     BUY = "buy"
     SELL = "sell"
     HOLD = "hold"
 
 
-class BuyType(str, Enum):
+class BuyType(StrEnum):
     INITIAL = "initial"
     PYRAMID = "pyramid"

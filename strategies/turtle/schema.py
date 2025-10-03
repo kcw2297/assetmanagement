@@ -3,9 +3,8 @@ from strategies.turtle.enums import SignalAction, BuyType
 
 
 class TurtlePosition(BaseModel):
-    price: float = Field(..., gt=0, description="매수 가격")
-    quantity: int = Field(..., gt=0, description="매수 수량")
-    N: float = Field(..., gt=0, description="매수 시점의 ATR(N) 값")
+    price: float = Field(..., gt=0, description="매매 가격")
+    quantity: int = Field(..., gt=0, description="매매 수량")
     trade_date: str = Field(..., description="거래일시 (ISO 8601 형식)")
     unit_number: int = Field(..., ge=1, description="유닛 번호 (1=초기매수, 2~4=추격매수)")
 

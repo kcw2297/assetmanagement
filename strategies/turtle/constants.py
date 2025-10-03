@@ -1,9 +1,8 @@
-BASE_UNIT_PERCENT = 2.0  # 기본 포지션 크기(유닛) (%)
 L1_BASE_BUY_PERIOD = 20
 L2_BASE_BUY_PERIOD = 55
 
 L1_BASE_SELL_PERIOD = 10
 L2_BASE_SELL_PERIOD = 20
 
-MAX_POSITION_PERCENT = 10.0  # 종목당 최대 포지션 (%)
+MAX_POSITION_UNIT = 5  # 종목당 최대 포지션 (%)
 
