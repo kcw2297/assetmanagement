@@ -1,4 +1,4 @@
-from strategies.turtle.constants import MAX_POSITION_UNIT
+from strategies.turtle.constants import MAX_POSITION_UNIT, PYRAMID_N_MULTIPLIER, STOP_LOSS_N_MULTIPLIER
 from strategies.turtle.schema import TurtlePosition
 
 
@@ -6,24 +6,22 @@ class TurtleStrategy():
     def __init__(
         self,
         max_position_unit: float = MAX_POSITION_UNIT,
+        pyramid_n_multiplier: float = PYRAMID_N_MULTIPLIER,
+        stop_loss_n_multiplier: float = STOP_LOSS_N_MULTIPLIER,
     ):
         self.max_position_unit = max_position_unit
-
+        self.pyramid_n_multiplier = pyramid_n_multiplier
+        self.stop_loss_n_multiplier = stop_loss_n_multiplier
         self.positions: list[TurtlePosition] = []
-        self.total_units = 0
-        self.last_trade_was_profitable: bool | None = None
-        self.entry_system: int | None = None
 
-    def buy(self, current_price: float, system1_max_price: float, system2_max_price: float) -> bool:
+    def buy(self, current_price: float, system1_max_price: float, system2_max_price: float, last_trade_was_profitable: bool | None) -> bool:
         if self.positions:
             return False
 
-        if current_price > system1_max_price and not self.last_trade_was_profitable:
-            self.entry_system = 1
+        if current_price > system1_max_price and not last_trade_was_profitable:
             return True
 
         if current_price > system2_max_price:
-            self.entry_system = 2
             return True
 
         return False
@@ -35,54 +33,36 @@ class TurtleStrategy():
         if current_price < system_min_price:
             return True
 
-        latest_position: TurtlePosition | None = self.get_latest_position()
-        if latest_position and current_price < latest_position.price - (2 * N):
+        latest_position: TurtlePosition | None = self._get_latest_position()
+        if latest_position and current_price < latest_position.price - (self.stop_loss_n_multiplier * N):
             return True
 
         return False
 
 
-    def pyramid_buy(self, current_price: float, total_asset: float, N: float) -> bool:
+    def pyramid_buy(self, current_price: float, N: float) -> bool:
         if not self.positions:
             return False
 
-        current_position_value = sum(pos.value for pos in self.positions)
-        if current_position_value >= total_asset * self.max_position_unit:
+        if len(self.positions) >= self.max_position_unit:
             return False
 
-        latest_position = self.get_latest_position()
+        latest_position = self._get_latest_position()
         if not latest_position:
             return False
 
-        return current_price >= latest_position.price + (0.5 * N)
+        return current_price >= latest_position.price + (self.pyramid_n_multiplier * N)
 
-    def add_position(self, price: float, quantity: int, N: float, trade_date: str):
-        unit_number = self.total_units + 1
+    def add_position(self, price: float, quantity: int, trade_date: str):
         position = TurtlePosition(
             price=price,
             quantity=quantity,
-            N=N,
             trade_date=trade_date,
-            unit_number=unit_number
         )
         self.positions.append(position)
-        self.total_units += 1
 
-    def get_latest_position(self) -> TurtlePosition | None:
+    def _get_latest_position(self) -> TurtlePosition | None:
         if not self.positions:
             return None
         return max(self.positions, key=lambda p: p.trade_date)
 
-    def clear_positions(self, sell_price: float):
-        if not self.positions:
-            self.positions = []
-            self.total_units = 0
-            self.entry_system = None
-            return
-
-        avg_buy_price = sum(pos.value for pos in self.positions) / sum(pos.quantity for pos in self.positions)
-        self.last_trade_was_profitable = sell_price > avg_buy_price
-
-        self.positions = []
-        self.total_units = 0
-        self.entry_system = None
