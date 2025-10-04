@@ -32,6 +32,7 @@ class TurtleStrategy():
         self.system2_sell_period = system2_sell_period
         self.positions: list[TurtlePosition] = []
         self.last_trade_was_profitable: bool | None = None
+        self.entry_system: int | None = None
 
     def buy(self, current_price: float, system1_closes: list[float], system2_closes: list[float]) -> bool:
         if self.positions:
@@ -42,21 +43,20 @@ class TurtleStrategy():
         if len(system2_closes) != self.system2_buy_period:
             raise ValueError(f"system2_closes 개수({len(system2_closes)})가 system2_buy_period({self.system2_buy_period})와 동일하지 않습니다.")
 
-        if current_price > max(system1_closes) and not self.last_trade_was_profitable:
-            return True
-
-        if current_price > max(system2_closes):
-            return True
 
         return False
 
-    def sell(self, current_price: float, system_closes: list[float], ohlcs: list[OHLC]) -> bool:
+    def sell(self, current_price: float, ohlcs: list[OHLC]) -> bool:
         if not self.positions:
             return False
+        
+        earliest_position: TurtlePosition | None = self._get_earliest_position()
+        # TODO: 현재 system이 먼지 파악 후, 해당 system의 period와 ohlcs의 개수와 다르면 에러 발생
 
         N = MovingAverage.calculate_atr(ohlcs, len(ohlcs))
+        system_min_close = min(ohlc.close for ohlc in ohlcs)
 
-        if current_price < min(system_closes):
+        if current_price < system_min_close:
             return True
 
         latest_position: TurtlePosition | None = self._get_latest_position()
@@ -66,18 +66,23 @@ class TurtleStrategy():
         return False
 
     def pyramid_buy(self, current_price: float, ohlcs: list[OHLC]) -> bool:
+
         if not self.positions:
             return False
 
         if len(self.positions) >= self.max_position_unit:
             return False
+        
+        earliest_position: TurtlePosition | None = self._get_earliest_position()
+        # TODO: 현재 system이 먼지 파악 후, 해당 system의 period와 ohlcs의 개수와 다르면 에러 발생
+
+
 
         latest_position = self._get_latest_position()
         if not latest_position:
             return False
 
-        period = len(ohlcs)
-        N = MovingAverage.calculate_atr(ohlcs, period)
+        N = MovingAverage.calculate_atr(ohlcs, len(ohlcs))
         return current_price >= latest_position.price + (self.pyramid_n_multiplier * N)
 
     def add_position(self, price: float, quantity: int, trade_date: str):
@@ -93,3 +98,9 @@ class TurtleStrategy():
             return None
         return max(self.positions, key=lambda p: p.trade_date)
 
+    def _get_earliest_position(self) -> TurtlePosition | None:
+        if not self.positions:
+            return None
+        return min(self.positions, key=lambda p: p.trade_date)
+    
+    

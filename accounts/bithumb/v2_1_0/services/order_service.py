@@ -7,6 +7,7 @@ class OrderService:
     def __init__(self, client: BithumbClient):
         self.client = client
 
+    # TODO: 지정가 매수 추가
     def execute_market_buy_order(self, market: str, price: float) -> Order | None:
         request_body = {
             'market': market,
@@ -22,6 +23,8 @@ class OrderService:
         else:
             raise Exception("매수가 실패하였습니다.")
 
+
+    # TODO: 지정가 매도 추가
     def execute_market_sell_order(self, market: str, volume: float) -> Order | None:
         request_body = {
             'market': market,
