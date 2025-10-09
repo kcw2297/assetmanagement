@@ -1,13 +1,14 @@
 from strategies.turtle.constants import (
-    MAX_POSITION_UNIT, 
-    PYRAMID_N_MULTIPLIER, 
-    STOP_LOSS_N_MULTIPLIER, 
-    L1_BASE_BUY_PERIOD, 
-    L2_BASE_BUY_PERIOD, 
-    L1_BASE_SELL_PERIOD, 
+    MAX_POSITION_UNIT,
+    PYRAMID_N_MULTIPLIER,
+    STOP_LOSS_N_MULTIPLIER,
+    L1_BASE_BUY_PERIOD,
+    L2_BASE_BUY_PERIOD,
+    L1_BASE_SELL_PERIOD,
     L2_BASE_SELL_PERIOD
 )
 from strategies.turtle.schema import TurtlePosition
+from strategies.turtle.enums import TurtleSystemType
 from common.schema import OHLC
 from indicators.moving_average import MovingAverage
 
@@ -32,31 +33,31 @@ class TurtleStrategy():
         self.system2_sell_period = system2_sell_period
         self.positions: list[TurtlePosition] = []
         self.last_trade_was_profitable: bool | None = None
-        self.entry_system: int | None = None
+        self.entry_system: TurtleSystemType = TurtleSystemType.ONE
 
-    def buy(self, current_price: float, system1_closes: list[float], system2_closes: list[float]) -> bool:
-        if self.positions:
+    def buy(self, current_price: float, ohlcs: list[OHLC]) -> bool:
+        if self.positions: # 이미 매수 기록 존재 => pyramid_buy 수행
             return False
+        
+        if self.entry_system == TurtleSystemType.ONE:
+            self._validate_ohlcs_period(ohlcs, self.system1_buy_period)
+        elif self.entry_system == TurtleSystemType.TWO:
+            self._validate_ohlcs_period(ohlcs, self.system2_buy_period)
 
-        if len(system1_closes) != self.system1_buy_period:
-            raise ValueError(f"system1_closes 개수({len(system1_closes)})가 system1_buy_period({self.system1_buy_period})와 동일하지 않습니다.")
-        if len(system2_closes) != self.system2_buy_period:
-            raise ValueError(f"system2_closes 개수({len(system2_closes)})가 system2_buy_period({self.system2_buy_period})와 동일하지 않습니다.")
-
-
-        return False
+        return current_price > max(ohlc.close for ohlc in ohlcs)
 
     def sell(self, current_price: float, ohlcs: list[OHLC]) -> bool:
         if not self.positions:
             return False
-        
-        earliest_position: TurtlePosition | None = self._get_earliest_position()
-        # TODO: 현재 system이 먼지 파악 후, 해당 system의 period와 ohlcs의 개수와 다르면 에러 발생
 
-        N = MovingAverage.calculate_atr(ohlcs, len(ohlcs))
-        system_min_close = min(ohlc.close for ohlc in ohlcs)
+        if self.entry_system == TurtleSystemType.ONE:
+            self._validate_ohlcs_period(ohlcs, self.system1_sell_period)
+        elif self.entry_system == TurtleSystemType.TWO:
+            self._validate_ohlcs_period(ohlcs, self.system2_sell_period)
 
-        if current_price < system_min_close:
+        N = MovingAverage.calculate_atr(ohlcs)
+
+        if current_price < min(ohlc.close for ohlc in ohlcs):
             return True
 
         latest_position: TurtlePosition | None = self._get_latest_position()
@@ -66,23 +67,24 @@ class TurtleStrategy():
         return False
 
     def pyramid_buy(self, current_price: float, ohlcs: list[OHLC]) -> bool:
-
         if not self.positions:
             return False
 
         if len(self.positions) >= self.max_position_unit:
             return False
-        
-        earliest_position: TurtlePosition | None = self._get_earliest_position()
-        # TODO: 현재 system이 먼지 파악 후, 해당 system의 period와 ohlcs의 개수와 다르면 에러 발생
 
+        # TODO: 공통 unit 상관도 확인
 
+        if self.entry_system == TurtleSystemType.ONE:
+            self._validate_ohlcs_period(ohlcs, self.system1_buy_period)
+        elif self.entry_system == TurtleSystemType.TWO:
+            self._validate_ohlcs_period(ohlcs, self.system2_buy_period)
 
         latest_position = self._get_latest_position()
         if not latest_position:
             return False
 
-        N = MovingAverage.calculate_atr(ohlcs, len(ohlcs))
+        N = MovingAverage.calculate_atr(ohlcs)
         return current_price >= latest_position.price + (self.pyramid_n_multiplier * N)
 
     def add_position(self, price: float, quantity: int, trade_date: str):
@@ -102,5 +104,7 @@ class TurtleStrategy():
         if not self.positions:
             return None
         return min(self.positions, key=lambda p: p.trade_date)
-    
-    
+
+    def _validate_ohlcs_period(self, ohlcs: list[OHLC], period: int):
+        if len(ohlcs) != period:
+            raise ValueError(f"ohlcs 개수({len(ohlcs)})가 period({period})와 동일하지 않습니다.")

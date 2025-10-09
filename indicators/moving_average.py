@@ -10,10 +10,7 @@ class MovingAverage:
         return sum(prices) / period
 
     @staticmethod
-    def calculate_atr(ohlcs: list[OHLC], period: int) -> float:
-        if len(ohlcs) != period:
-            raise ValueError(f"데이터 개수가 period({period})와 동일해야 합니다.")
-
+    def calculate_atr(ohlcs: list[OHLC]) -> float:
         true_ranges = []
         for i in range(1, len(ohlcs)):
             high_low = ohlcs[i].high - ohlcs[i].low
@@ -21,5 +18,6 @@ class MovingAverage:
             low_close = abs(ohlcs[i].low - ohlcs[i - 1].close)
             true_ranges.append(max(high_low, high_close, low_close))
 
-        return sum(true_ranges) / period
+        # TODO: 단순 기간 나누기 아님, 다시 확인 필요
+        return sum(true_ranges) / len(ohlcs)
     
