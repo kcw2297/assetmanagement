@@ -6,15 +6,13 @@ import hashlib
 from urllib.parse import urlencode
 import requests
 
-from accounts.bithumb.v2_1_0.config.settings import settings
-
 
 class BithumbClient:
     BASE_URL = "https://api.bithumb.com"
 
-    def __init__(self):
-        self.api_key = settings.BITHUMB_API_KEY
-        self.secret_key = settings.BITHUMB_SECRET_KEY
+    def __init__(self, api_key: str, api_secret_key: str):
+        self.api_key = api_key
+        self.secret_key = api_secret_key
 
     def _generate_jwt_token(self) -> str:
         payload = {

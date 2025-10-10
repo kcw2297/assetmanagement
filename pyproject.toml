@@ -1,8 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "assetmanagement"
-version = "0.1.0"
-description = "Add your description here"
+dynamic = ["version"]
+description = "Crypto trading library for turtle trading strategy"
+readme = "README.md"
 requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
 dependencies = [
     "aiohttp>=3.12.15",
     "numpy>=2.3.3",
@@ -10,7 +19,18 @@ dependencies = [
     "pybithumb>=1.0.21",
     "pydantic>=2.11.9",
     "pyjwt>=2.10.1",
-    "pytest>=8.4.2",
     "python-dotenv>=1.1.1",
     "requests>=2.32.5",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=4.1.0",
+]
+
+[tool.hatch.version]
+path = "assetmanagement/version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["assetmanagement"]

@@ -135,6 +135,11 @@ ENV/
 env.bak/
 venv.bak/
 
+# PyPI credentials (보안 중요!)
+.pypirc
+*.token
+.twine
+
 # Spyder project settings
 .spyderproject
 .spyproject
