@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, computed_field
+from pydantic import BaseModel, Field
 from strategies.turtle.enums import SignalAction, BuyType
 
 
@@ -7,7 +7,6 @@ class TurtlePosition(BaseModel):
     quantity: int = Field(..., gt=0, description="매매 수량")
     trade_date: str = Field(..., description="거래일시 (ISO 8601 형식)")
 
-    @computed_field
     @property
     def total_value(self) -> float:
         return self.price * self.quantity

@@ -1,6 +1,5 @@
 from accounts.bithumb.v2_1_0.config.bithumb_client import BithumbClient
 from accounts.bithumb.v2_1_0.schema import Candle
-from core.utils.moving_average_util import MovingAverageUtils
 
 
 class CandleService:

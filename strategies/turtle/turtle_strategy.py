@@ -46,7 +46,7 @@ class TurtleStrategy():
 
         return current_price > max(ohlc.close for ohlc in ohlcs)
 
-    def sell(self, current_price: float, ohlcs: list[OHLC]) -> bool:
+    def sell(self, current_price: float, ohlcs: list[OHLC], N: float) -> bool:
         if not self.positions:
             return False
 
@@ -55,36 +55,31 @@ class TurtleStrategy():
         elif self.entry_system == TurtleSystemType.TWO:
             self._validate_ohlcs_period(ohlcs, self.system2_sell_period)
 
-        N = MovingAverage.calculate_atr(ohlcs)
-
-        if current_price < min(ohlc.close for ohlc in ohlcs):
+        if current_price < min(ohlc.close for ohlc in ohlcs): # system 최저가 이탈
             return True
 
         latest_position: TurtlePosition | None = self._get_latest_position()
+        
+        # 2N 손절
         if latest_position and current_price < latest_position.price - (self.stop_loss_n_multiplier * N):
             return True
 
         return False
 
-    def pyramid_buy(self, current_price: float, ohlcs: list[OHLC]) -> bool:
+    def pyramid_buy(self, current_price: float, N: float) -> bool:
         if not self.positions:
             return False
 
+        # 최대 유닛 검증
         if len(self.positions) >= self.max_position_unit:
             return False
 
-        # TODO: 공통 unit 상관도 확인
 
-        if self.entry_system == TurtleSystemType.ONE:
-            self._validate_ohlcs_period(ohlcs, self.system1_buy_period)
-        elif self.entry_system == TurtleSystemType.TWO:
-            self._validate_ohlcs_period(ohlcs, self.system2_buy_period)
-
-        latest_position = self._get_latest_position()
+        latest_position: TurtlePosition | None = self._get_latest_position()
         if not latest_position:
             return False
 
-        N = MovingAverage.calculate_atr(ohlcs)
+        # 최근 진입가 대비 1N 상승 시 추가 매수
         return current_price >= latest_position.price + (self.pyramid_n_multiplier * N)
 
     def add_position(self, price: float, quantity: int, trade_date: str):

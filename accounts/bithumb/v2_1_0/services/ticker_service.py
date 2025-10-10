@@ -1,6 +1,4 @@
 from accounts.bithumb.v2_1_0.config.bithumb_client import BithumbClient
-from accounts.bithumb.v2_1_0.enums import AccountCurrency
-
 
 from accounts.bithumb.v2_1_0.schema import Ticker
 
@@ -56,23 +54,4 @@ class TickerService:
         return result
 
 
-    def get_bitcoin_ticker(self) -> list[Ticker] | None:
-        return self.get_ticker("KRW-BTC")
         
-
-    def get_crypto_tickers(self) -> list[Ticker]:
-        tickers = []
-        crypto_currencies = AccountCurrency.get_crypto_currencies()
-
-        for currency in crypto_currencies:
-            market = f"KRW-{currency}"
-            ticker_list = self.get_ticker(market)
-            if ticker_list:
-                tickers.extend(ticker_list)
-
-        return tickers
-
-    def get_current_price(self, currency: str) -> float | None:
-        market = f"KRW-{currency.upper()}"
-        tickers = self.get_ticker(market)
-        return tickers[0].trade_price if tickers else None
