@@ -6,7 +6,7 @@ class CandleService:
     def __init__(self, client: BithumbClient):
         self.client = client
 
-    def get_daily_candles(self, market: str, count: int = 20) -> list[Candle]:
+    def get_daily_candles(self, market: str, count: int) -> list[Candle]:
         if count < 1 or count > 200:
             raise ValueError(f"count는 1 이상 200 이하여야 합니다. 현재 값: {count}")
 

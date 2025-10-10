@@ -10,7 +10,6 @@ from strategies.turtle.constants import (
 from strategies.turtle.schema import TurtlePosition
 from strategies.turtle.enums import TurtleSystemType
 from common.schema import OHLC
-from indicators.moving_average import MovingAverage
 
 
 class TurtleStrategy():
@@ -32,9 +31,8 @@ class TurtleStrategy():
         self.system1_sell_period = system1_sell_period
         self.system2_sell_period = system2_sell_period
         self.positions: list[TurtlePosition] = []
-        self.last_trade_was_profitable: bool | None = None
         self.entry_system: TurtleSystemType = TurtleSystemType.ONE
-
+ 
     def buy(self, current_price: float, ohlcs: list[OHLC]) -> bool:
         if self.positions: # 이미 매수 기록 존재 => pyramid_buy 수행
             return False
@@ -89,6 +87,9 @@ class TurtleStrategy():
             trade_date=trade_date,
         )
         self.positions.append(position)
+
+    def clear_position(self):
+        self.positions = []
 
     def _get_latest_position(self) -> TurtlePosition | None:
         if not self.positions:
