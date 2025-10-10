@@ -3,7 +3,7 @@ from datetime import datetime
 from interfaces.exchange import ExchangeInterface
 from accounts.bithumb.v2_1_0.api import BithumbAPI
 from common.schema import OHLC
-
+from accounts.bithumb.v2_1_0.constants import ACCOUNT_BASE_CURRENCY
 
 class BithumbExchange(ExchangeInterface):
     def __init__(self, api: BithumbAPI):
@@ -36,7 +36,8 @@ class BithumbExchange(ExchangeInterface):
     def sell(self, market: str, volume: float):
         return self.api.order.execute_market_sell_order(market, volume)
 
-    def balance(self, currency: str) -> float:
+    def balance(self, currency: str = ACCOUNT_BASE_CURRENCY) -> float:
+        """잔고 조회 - 'KRW', 'BTC' 가능"""
         accounts = self.api.account.get_accounts()
         for account in accounts:
             if account.currency == currency:

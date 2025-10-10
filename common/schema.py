@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
+
 class OHLC(BaseModel):
     high: float
     low: float

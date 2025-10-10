@@ -26,6 +26,6 @@ class ExchangeInterface(ABC):
         pass
 
     @abstractmethod
-    def balance(self, currency: str) -> float:
+    def balance(self, *args, **kwargs) -> float:
         """잔고 조회"""
         pass
