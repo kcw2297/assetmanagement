@@ -2,13 +2,13 @@
 
 # 버전 업데이트
 bump-patch:
-	@python bump_version.py patch
+	@python version.py patch
 
 bump-minor:
-	@python bump_version.py minor
+	@python version.py minor
 
 bump-major:
-	@python bump_version.py major
+	@python version.py major
 
 # 빌드 & 배포
 build:

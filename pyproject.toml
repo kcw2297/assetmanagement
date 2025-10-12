@@ -30,7 +30,27 @@ dev = [
 ]
 
 [tool.hatch.version]
-path = "assetmanagement/version.py"
+path = "version.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["assetmanagement"]
+packages = [
+    "accounts",
+    "common",
+    "indicators",
+    "interfaces",
+    "strategies"
+]
+include = [
+    "*.py",
+    "accounts/**/*.py",
+    "common/**/*.py",
+    "indicators/**/*.py",
+    "interfaces/**/*.py",
+    "strategies/**/*.py"
+]
+
+[dependency-groups]
+dev = [
+    "build>=1.3.0",
+    "twine>=6.2.0",
+]

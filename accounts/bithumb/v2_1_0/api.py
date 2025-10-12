@@ -6,8 +6,8 @@ from accounts.bithumb.v2_1_0.services.candle_service import CandleService
 
 
 class BithumbAPI:
-    def __init__(self):
-        self._client = BithumbClient()
+    def __init__(self, api_key: str, api_secret_key: str):
+        self._client = BithumbClient(api_key, api_secret_key)
         self._account_service = None
         self._ticker_service = None
         self._order_service = None
